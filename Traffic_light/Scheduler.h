@@ -4,23 +4,32 @@
 #include "Arduino.h"
 #include <stdint.h>
 
+#define NUM_TASK (sizeof(task) / sizeof(task[0]))
+
 #define LED_RED 14
 #define LED_YELLOW 15
 #define LED_GREEN 16
-
-
-void task1(void);
-void task2(void);
-void task3(void);
 
 typedef struct
 {
   uint32_t period;
   uint32_t last_run;
+  uint8_t priority;
   void (*function)(void);
 }Task_t;
 
-void Scheduler_Run(uint32_t current_time);
+typedef enum{
+  STATE_RED,
+  STATE_RED_YELLOW,
+  STATE_GREEN,
+  STATE_YELLOW
+}TraficState_t;
 
+extern Task_t task[];           // expose the table so main can see it
+
+void light_task(void);
+void button_task(void);
+
+void Scheduler_Run(uint32_t current_time);
 
 #endif

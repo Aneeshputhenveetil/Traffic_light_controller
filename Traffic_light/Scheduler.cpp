@@ -1,22 +1,20 @@
 #include "Scheduler.h"
+#include "Timer.h"
 
 
 Task_t task[]=
 {
-  {100, 0, task1},
-  {500, 0, task2},
-  {1000, 0, task3}
+  {10, 0, 1, light_task},
+  {20, 0, 1, button_task},
 };
 
-
-static uint8_t led_flag1 = 0;
-static uint8_t led_flag2 = 0;
-static uint8_t led_flag3 = 0;
+TraficState_t state = STATE_RED;
+Task_Delay_t light_delay = {0, 0};
 
 
 void Scheduler_Run(uint32_t current_time)
 {
-  for (int i = 0;i< 3; i++)
+  for (int i = 0;i< NUM_TASK; i++)
   {
     if((current_time - task[i].last_run) >=  task[i].period)
     {
@@ -26,44 +24,55 @@ void Scheduler_Run(uint32_t current_time)
   }
 }
 
-void task1(void)
+void light_task(void)
 {
-      if(led_flag1)
-    {
-      led_flag1 = 0;
-      digitalWrite(LED_RED, HIGH);   // turn the LED on (HIGH is the voltage level)
-    }
-    else
-    {
-      led_flag1 = 1;
-      digitalWrite(LED_RED, LOW);    // turn the LED off by making the voltage LOW
-    }
+  switch(state)
+  {
+    case STATE_RED:
+      digitalWrite(LED_RED, HIGH);
+      digitalWrite(LED_YELLOW, LOW);
+      digitalWrite(LED_GREEN, LOW);
+      if(Task_Delay(&light_delay, 5000))
+      {
+        state = STATE_RED_YELLOW;
+      }
+    break;
+    case STATE_RED_YELLOW:
+      digitalWrite(LED_RED, HIGH);
+      digitalWrite(LED_YELLOW, HIGH);
+      digitalWrite(LED_GREEN, LOW);
+      if(Task_Delay(&light_delay, 2000))
+      {
+        state = STATE_GREEN;
+      }
+    break;
+    case STATE_GREEN:
+      digitalWrite(LED_RED, LOW);
+      digitalWrite(LED_YELLOW, LOW);
+      digitalWrite(LED_GREEN, HIGH);
+      if(Task_Delay(&light_delay, 5000))
+      {
+        state = STATE_YELLOW;
+      }
+    break;
+    case STATE_YELLOW:
+       digitalWrite(LED_RED, LOW);
+      digitalWrite(LED_YELLOW, HIGH);
+      digitalWrite(LED_GREEN, LOW);
+      if(Task_Delay(&light_delay, 2000))
+      {
+        state = STATE_RED;
+      }
+    break;
+  }
+
+
 }
 
-void task2(void)
+void button_task(void)
 {
-    if(led_flag2)
-    {
-      led_flag2 = 0;
-      digitalWrite(LED_YELLOW, HIGH);   // turn the LED on (HIGH is the voltage level)
-    }
-    else
-    {
-      led_flag2 = 1;
-      digitalWrite(LED_YELLOW, LOW);    // turn the LED off by making the voltage LOW
-    }
-}
-
-void task3(void)
-{
-    if(led_flag3)
-    {
-      led_flag3 = 0;
-      digitalWrite(LED_GREEN, HIGH);   // turn the LED on (HIGH is the voltage level)
-    }
-    else
-    {
-      led_flag3 = 1;
-      digitalWrite(LED_GREEN, LOW);    // turn the LED off by making the voltage LOW
-    }
+//  if(Task_Delay(&delay2, 500))
+//  {
+//    digitalWrite(LED_YELLOW, !digitalRead(LED_YELLOW));  // toggle LED
+//  }
 }

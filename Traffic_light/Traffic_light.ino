@@ -30,6 +30,9 @@ static uint32_t current_time = 0;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
+  Serial.begin(9600); 
+  while (!Serial); 
+  Serial.println("System Initialized");
 //Initialize Led pins
   pinMode(LED_RED, OUTPUT);
   pinMode(LED_YELLOW, OUTPUT);
