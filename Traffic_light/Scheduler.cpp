@@ -1,15 +1,33 @@
 #include "Scheduler.h"
 #include "Timer.h"
-
+#define PRIORITY_LOW     3
+#define PRIORITY_MEDIUM  2
+#define PRIORITY_HIGH    1
 
 Task_t task[]=
 {
-  {10, 0, 1, light_task},
-  {20, 0, 1, button_task},
+  {20, 0, PRIORITY_MEDIUM, light_task},
+  {10, 0, PRIORITY_HIGH, button_task},
 };
 
 TraficState_t state = STATE_RED;
 Task_Delay_t light_delay = {0, 0};
+
+
+void Scheduler_SortByPriority(void)
+{
+  for(int i= 1;i< NUM_TASK;i++)
+  {
+    Task_t tmp = task[i];
+    int j = i-1;
+    while(j>=0 && task[j].priority > tmp.priority)
+    {
+      task[j+1] = task[j];
+      j--;
+    }
+    task[j+1] = task[j];
+  }
+}
 
 
 void Scheduler_Run(uint32_t current_time)

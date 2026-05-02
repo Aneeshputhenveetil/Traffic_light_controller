@@ -30,6 +30,7 @@ extern Task_t task[];           // expose the table so main can see it
 void light_task(void);
 void button_task(void);
 
+void Scheduler_SortByPriority(void);
 void Scheduler_Run(uint32_t current_time);
 
 #endif

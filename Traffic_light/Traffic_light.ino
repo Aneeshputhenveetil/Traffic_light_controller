@@ -38,6 +38,7 @@ void setup() {
   pinMode(LED_YELLOW, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
   Timer_Init();
+  Scheduler_SortByPriority();
 }
 
 // the loop function runs over and over again forever
